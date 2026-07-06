@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Chatbot</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        #chat {
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 70%;
+            padding: 8px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-left: 5px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>📄 PDF Chatbot</h2>
+
+    <div class="top-bar">
+        <button onclick="clearChat()">🧹 Clear Chat</button>
+    </div>
+
+    <select id="areaSelect" onchange="updateMachines()"></select>
+
+    <select id="machineSelect" onchange="updateVariants()"></select>
+
+    <select id="variantSelect" onchange="switchManual()"></select>
+
+    <br><br>
+
+    <img
+        id="machineImage"
+        style="max-width:400px; max-height:250px;"
+    >
+
+    <div id="chat"></div>
+
+    <input id="q" placeholder="Ask a question...">
+    <button onclick="ask()">Send</button>
+
+    <h3>Documents</h3>
+
+    <div id="documents"></div>
+
+
+    <script>
+	const BACKEND_URL = "lehnerchatbotv02internal-production.up.railway.app";
+
+        // ----------------------------
+        // SESSION ID
+        // ----------------------------
+        let session_id = localStorage.getItem("session_id");
+
+        if (!session_id) {
+            session_id = crypto.randomUUID();
+            localStorage.setItem("session_id", session_id);
+        }
+
+        const chatBox = document.getElementById("chat");
+
+        let manualTree = {};
+
+
+        // ----------------------------
+        // ASK FUNCTION (STREAMING)
+        // ----------------------------
+        async function ask() {
+            const area =
+                document.getElementById("areaSelect").value;
+
+            const machine =
+                document.getElementById("machineSelect").value;
+
+            const variant =
+                document.getElementById("variantSelect").value;
+
+            const manual = `${area}/${machine}/${variant}`; 
+
+            const q = document.getElementById("q").value;
+            if (!q) return;
+
+            // Show user message
+            chatBox.innerText +=
+                "\n\n🧑 You: " + q +
+                "\n🤖 Searching manual...\n";
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            const res = await fetch(`${BACKEND_URL}/ask`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    question: q,
+                    session_id: session_id,
+                    manual: manual
+                })
+            });
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+
+            let done = false;
+            let firstChunk = true;
+
+            while (!done) {
+                const { value, done: doneReading } = await reader.read();
+                done = doneReading;
+
+                if (value) {
+
+                    const chunk = decoder.decode(value);
+
+                    if (firstChunk) {
+
+                        chatBox.innerText =
+                            chatBox.innerText.replace(
+                                "🤖 Searching manual...\n",
+                                "🤖 Bot: "
+                            );
+                        firstChunk = false;
+                    }
+
+                    chatBox.innerText += chunk;
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            }
+
+            document.getElementById("q").value = "";
+        }
+
+        // ----------------------------
+        // Load Manuals
+        // ----------------------------
+
+        async function loadManuals() {
+
+            const res = await fetch(`${BACKEND_URL}/manuals`);
+
+            manualTree = await res.json();
+
+            const areaSelect = document.getElementById("areaSelect");
+
+            areaSelect.innerHTML = "";
+
+            for (const area in manualTree) {
+
+                const option = document.createElement("option");
+
+                option.value = area;
+                option.textContent = area;
+
+                areaSelect.appendChild(option);
+            }
+
+            updateMachines();
+            preloadImages();
+        }
+
+
+        function updateMachines() {
+
+            const area = document.getElementById("areaSelect").value;
+
+            const machineSelect =
+                document.getElementById("machineSelect");
+
+            machineSelect.innerHTML = "";
+
+            for (const machine in manualTree[area]) {
+
+                const option = document.createElement("option");
+
+                option.value = machine;
+                option.textContent = machine;
+
+                machineSelect.appendChild(option);
+            }
+
+            updateVariants();
+        }
+
+        function updateVariants() {
+
+            const area =
+                document.getElementById("areaSelect").value;
+
+            const machine =
+                document.getElementById("machineSelect").value;
+
+            const variantSelect =
+                document.getElementById("variantSelect");
+
+            variantSelect.innerHTML = "";
+
+            const variants = manualTree[area][machine];
+
+            variants.forEach(variant => {
+
+                const option = document.createElement("option");
+
+                option.value = variant;
+                option.textContent = variant;
+
+                variantSelect.appendChild(option);
+            });
+
+            
+            switchManual();
+        }
+
+        function updateImage() {
+
+            const area =
+                document.getElementById("areaSelect").value;
+
+            const machine =
+                document.getElementById("machineSelect").value;
+
+            const variant =
+                document.getElementById("variantSelect").value;
+
+            document.getElementById("machineImage").src =
+                `${BACKEND_URL}/image/${area}/${machine}/${variant}`;
+        }
+
+
+        async function preloadImages() {
+
+            for (const area in manualTree) {
+
+                for (const machine in manualTree[area]) {
+
+                    for (const variant of manualTree[area][machine]) {
+
+                        const img = new Image();
+
+                        img.src =
+                            `${BACKEND_URL}/image/${area}/${machine}/${variant}`;
+                    }
+                }
+            }
+        }
+
+
+        // ----------------------------
+        // Set up files for download
+        // ----------------------------
+
+        async function updateDocuments() {
+
+            const area =
+                document.getElementById("areaSelect").value;
+
+            const machine =
+                document.getElementById("machineSelect").value;
+
+            const variant =
+                document.getElementById("variantSelect").value;
+
+            const res = await fetch(
+                `${BACKEND_URL}/files/${area}/${machine}/${variant}`
+            );
+
+            const files = await res.json();
+
+            const container =
+                document.getElementById("documents");
+
+            container.innerHTML = "";
+
+            files.forEach(file => {
+
+                const link = document.createElement("a");
+
+                link.href =
+                    `${BACKEND_URL}/download/${area}/${machine}/${variant}/${encodeURIComponent(file)}`;
+
+                link.textContent = "📄 " + file;
+
+                link.target = "_blank";
+
+                container.appendChild(link);
+
+                container.appendChild(
+                    document.createElement("br")
+                );
+            });
+        }
+
+
+        // ----------------------------
+        // CLEAR CHAT
+        // ----------------------------
+        function clearChat() {
+            localStorage.removeItem("session_id");
+            location.reload();
+        }
+        function switchManual() {
+            session_id = crypto.randomUUID();
+            localStorage.setItem("session_id", session_id);
+
+            chatBox.innerText = "";
+            updateImage();
+            updateDocuments();
+        }
+
+         
+
+        // Enter to send
+        document.getElementById("q").addEventListener("keydown", function(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault(); // prevent newline / form submit
+                ask();
+            }
+        });
+
+        loadManuals();
+    </script>
+
+</body>
+</html>
