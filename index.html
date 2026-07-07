@@ -35,10 +35,56 @@
             justify-content: space-between;
             margin-bottom: 10px;
         }
+
+        #loginScreen{
+
+            width:300px;
+
+            margin:80px auto;
+
+            text-align:center;
+
+        }
+
+        #loginScreen input{
+
+            width:100%;
+
+            padding:10px;
+
+            margin-bottom:10px;
+
+        }
+
+        #loginError{
+
+            color:red;
+
+        }
     </style>
 </head>
 
 <body>
+
+    <div id="loginScreen">
+
+        <h2>Internal Chatbot</h2>
+
+        <input
+            id="password"
+            type="password"
+            placeholder="Password">
+
+        <button onclick="login()">
+            Login
+        </button>
+
+        <p id="loginError"></p>
+
+    </div>
+
+    <div id="app" style="display:none;">
+
 
     <h2>📄 PDF Chatbot</h2>
 
@@ -71,10 +117,15 @@
 
     <script>
 	const BACKEND_URL = "https://lehnerchatbotv02internal-production.up.railway.app";
-
+    
         // ----------------------------
         // SESSION ID
         // ----------------------------
+        let authToken =
+            sessionStorage.getItem(
+                "authToken"
+            );
+
         let session_id = localStorage.getItem("session_id");
 
         if (!session_id) {
@@ -160,7 +211,26 @@
 
         async function loadManuals() {
 
-            const res = await fetch(`${BACKEND_URL}/manuals`);
+            const res = await fetch(
+                `${BACKEND_URL}/manuals`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                }
+            );
+
+            if (res.status === 401) {
+
+                sessionStorage.removeItem("authToken");
+
+                location.reload();
+
+                return;
+
+            }
+
+
 
             manualTree = await res.json();
 
@@ -340,8 +410,81 @@
             }
         });
 
-        loadManuals();
-    </script>
 
+        async function login(){
+
+            const password =
+                document.getElementById(
+                    "password"
+                ).value;
+
+            const response =
+                await fetch(
+                    `${BACKEND_URL}/login`,
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":"application/json"
+                        },
+
+                        body:JSON.stringify({
+
+                            password:password
+
+                        })
+
+                    }
+                );
+
+            if(!response.ok){
+
+                document.getElementById(
+                    "loginError"
+                ).innerText =
+                    "Wrong password";
+
+                return;
+
+            }
+
+            const data =
+                await response.json();
+
+            authToken =
+                data.token;
+
+            sessionStorage.setItem(
+                "authToken",
+                authToken
+            );
+
+            showApp();
+
+        }
+
+        function showApp(){
+
+            document.getElementById(
+                "loginScreen"
+            ).style.display="none";
+
+            document.getElementById(
+                "app"
+            ).style.display="block";
+
+            loadManuals();
+
+        }
+
+        if(authToken){
+
+            showApp();
+
+        }
+</script>
+
+    </div>
 </body>
 </html>
