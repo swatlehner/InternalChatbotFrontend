@@ -409,20 +409,66 @@
 
             files.forEach(file => {
 
-                const link = document.createElement("a");
+                const button = document.createElement("button");
 
-                link.href =
-                    `${BACKEND_URL}/download/${area}/${machine}/${variant}/${encodeURIComponent(file)}`;
+                button.textContent = "📄 " + file;
 
-                link.textContent = "📄 " + file;
+                button.onclick = async function(){
 
-                link.target = "_blank";
+                    const response = await fetch(
+                        `${BACKEND_URL}/download/${area}/${machine}/${variant}/${encodeURIComponent(file)}`,
+                        {
+                            headers:{
+                                Authorization:`Bearer ${authToken}`
+                            }
+                        }
+                    );
 
-                container.appendChild(link);
+
+                    if(response.status === 401){
+
+                        sessionStorage.removeItem(
+                            "authToken"
+                        );
+
+                        location.reload();
+
+                        return;
+
+                    }
+
+
+                    const blob = await response.blob();
+
+
+                    const url = URL.createObjectURL(blob);
+
+
+                    const a = document.createElement("a");
+
+                    a.href = url;
+
+                    a.download = file;
+
+                    document.body.appendChild(a);
+
+                    a.click();
+
+
+                    a.remove();
+
+                    URL.revokeObjectURL(url);
+
+                };
+
+
+                container.appendChild(button);
+
 
                 container.appendChild(
                     document.createElement("br")
                 );
+
             });
         }
 
