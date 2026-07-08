@@ -409,11 +409,17 @@
 
             files.forEach(file => {
 
-                const button = document.createElement("button");
+                const link = document.createElement("a");
 
-                button.textContent = "📄 " + file;
+                link.textContent = "📄 " + file;
 
-                button.onclick = async function(){
+                link.href = "#";
+
+
+                link.onclick = async function(event){
+
+                    event.preventDefault();
+
 
                     const response = await fetch(
                         `${BACKEND_URL}/download/${area}/${machine}/${variant}/${encodeURIComponent(file)}`,
@@ -444,25 +450,15 @@
                     const url = URL.createObjectURL(blob);
 
 
-                    const a = document.createElement("a");
-
-                    a.href = url;
-
-                    a.download = file;
-
-                    document.body.appendChild(a);
-
-                    a.click();
-
-
-                    a.remove();
-
-                    URL.revokeObjectURL(url);
+                    window.open(
+                        url,
+                        "_blank"
+                    );
 
                 };
 
 
-                container.appendChild(button);
+                container.appendChild(link);
 
 
                 container.appendChild(
