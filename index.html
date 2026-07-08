@@ -524,25 +524,73 @@
 
 
 
+        async function verifyToken(){
+
+            const response = await fetch(
+                `${BACKEND_URL}/verify`,
+                {
+                    headers:{
+                        Authorization:`Bearer ${authToken}`
+                    }
+                }
+            );
+
+
+            return response.ok;
+        }
+
+
+
         function showApp(){
 
             document.getElementById(
                 "loginScreen"
             ).style.display="none";
 
+
             document.getElementById(
                 "app"
             ).style.display="block";
+
 
             loadManuals();
 
         }
 
-        if(authToken){
 
-            showApp();
+
+        async function checkLogin(){
+
+            if(!authToken){
+
+                return;
+
+            }
+
+
+            const valid = await verifyToken();
+
+
+            if(valid){
+
+                showApp();
+
+            }
+            else{
+
+                sessionStorage.removeItem(
+                    "authToken"
+                );
+
+                authToken = null;
+
+            }
 
         }
+
+
+
+        checkLogin();
 </script>
 
     </div>
