@@ -89,7 +89,20 @@
     <h2>📄 PDF Chatbot</h2>
 
     <div class="top-bar">
-        <button onclick="clearChat()">🧹 Clear Chat</button>
+
+        <div>
+
+            <button onclick="clearChat()">
+                🧹 Clear Chat
+            </button>
+
+
+            <button onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
     </div>
 
     <select id="areaSelect" onchange="updateMachines()"></select>
@@ -476,6 +489,19 @@
             localStorage.removeItem("session_id");
             location.reload();
         }
+
+        function logout(){
+
+            sessionStorage.removeItem(
+                "authToken"
+            );
+
+            authToken = null;
+
+            location.reload();
+
+        }
+
         function switchManual() {
             session_id = crypto.randomUUID();
             localStorage.setItem("session_id", session_id);
