@@ -692,7 +692,12 @@
 
             }
 
-            document.getElementById("q").value = "";
+            const input =
+                document.getElementById("q");
+
+            input.value = "";
+
+            input.focus();
 
         }
 
@@ -951,8 +956,16 @@
         // CLEAR CHAT
         // ----------------------------
         function clearChat() {
-            localStorage.removeItem("session_id");
-            location.reload();
+
+            session_id = crypto.randomUUID();
+
+            localStorage.setItem(
+                "session_id",
+                session_id
+            );
+
+            chatBox.innerHTML = "";
+
         }
 
         function logout(){
@@ -971,9 +984,12 @@
             session_id = crypto.randomUUID();
             localStorage.setItem("session_id", session_id);
 
-            chatBox.innerText = "";
+            chatBox.innerHTML = "";
             updateImage();
             updateDocuments();
+            document.getElementById(
+                "q"
+            ).focus();            
         }
 
          
@@ -1087,6 +1103,10 @@
 
 
             loadManuals();
+
+            document.getElementById(
+                "q"
+            ).focus();            
 
         }
 
