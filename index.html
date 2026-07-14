@@ -341,14 +341,6 @@
 
     }
 
-    .message-content{
-
-        display:flex;
-
-        flex-direction:column;
-
-    }
-
     .bubble{
 
         max-width:75%;
@@ -582,34 +574,17 @@
             userMessage.className =
                 "message user";
 
-            const userContent =
-                document.createElement("div");
-
-            userContent.className =
-                "message-content";
-
-
             const userBubble =
                 document.createElement("div");
 
             userBubble.className =
                 "bubble";
 
-            userBubble.textContent =
-                q;
+            userBubble.textContent = q;
 
+            userMessage.appendChild(userBubble);
 
-            userContent.appendChild(
-                userBubble
-            );
-
-            userMessage.appendChild(
-                userContent
-            );
-
-            chatBox.appendChild(
-                userMessage
-            );
+            chatBox.appendChild(userMessage);
 
 
             // ----------------------------
@@ -622,31 +597,15 @@
             botMessage.className =
                 "message assistant";
 
-            const botContent =
-                document.createElement("div");
-
-            botContent.className =
-                "message-content";
-
-
             const botBubble =
                 document.createElement("div");
 
             botBubble.className =
                 "bubble";
 
+            botMessage.appendChild(botBubble);
 
-            botContent.appendChild(
-                botBubble
-            );
-
-            botMessage.appendChild(
-                botContent
-            );
-
-            chatBox.appendChild(
-                botMessage
-            );
+            chatBox.appendChild(botMessage);
 
             chatBox.scrollTop =
                 chatBox.scrollHeight;
