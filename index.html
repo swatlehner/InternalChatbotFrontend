@@ -603,7 +603,12 @@
             botBubble.className =
                 "bubble";
 
-            botMessage.appendChild(botBubble);
+            botBubble.textContent =
+                "Thinking...";
+
+            botMessage.appendChild(
+                botBubble
+            );
 
             chatBox.appendChild(botMessage);
 
@@ -664,6 +669,7 @@
 
             let done = false;
 
+            let firstChunk = true;
 
             while(!done){
 
@@ -682,9 +688,17 @@
                     const chunk =
                         decoder.decode(value);
 
+                    if(firstChunk){
+
+                        botBubble.textContent = "";
+
+                        firstChunk = false;
+
+                    }
+
                     botBubble.textContent +=
                         chunk;
-
+                        
                     chatBox.scrollTop =
                         chatBox.scrollHeight;
 
