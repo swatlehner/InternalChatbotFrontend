@@ -65,7 +65,31 @@
 
     }
 
+    .language-switch{
 
+        width:120px;
+
+        font-size:15px;
+
+        user-select:none;
+
+    }
+
+    .language-switch span{
+
+        cursor:pointer;
+
+        color:#666;
+
+    }
+
+    .language-switch span.active{
+
+        color:#1f5aa6;
+
+        font-weight:600;
+
+    }    
     /* ---------------- APP ---------------- */
 
     #app{
@@ -572,7 +596,9 @@
             type="password"
             placeholder="Password">
 
-        <button onclick="login()">
+        <button
+            id="loginButton"
+            onclick="login()">
             Login
         </button>
 
@@ -584,16 +610,43 @@
 
     <header class="header">
 
-        <h1>Internal Manual Assistant</h1>
+        <div
+            class="language-switch">
+
+            🌐
+
+            <span id="langEN">
+                EN
+            </span>
+
+            |
+
+            <span id="langDE">
+                DE
+            </span>
+
+        </div>
+
+        <h1 id="pageTitle">
+            Internal Manual Assistant
+        </h1>
 
         <div class="header-buttons">
 
-            <button onclick="clearChat()">
+            <button
+                id="newChatButton"
+                onclick="clearChat()">
+
                 New Chat
+
             </button>
 
-            <button onclick="logout()">
+            <button
+                id="logoutButton"
+                onclick="logout()">
+
                 Logout
+
             </button>
 
         </div>
@@ -618,7 +671,9 @@
 
             <div class="card">
 
-                <h3>Machine</h3>
+                <h3 id="machineTitle">
+                    Machine
+                </h3>
 
                 <img id="machineImage">
 
@@ -627,7 +682,9 @@
 
             <div class="card">
 
-                <h3>Documents</h3>
+                <h3 id="documentsTitle">
+                    Documents
+                </h3>
 
                 <div id="documents"></div>
 
@@ -646,7 +703,9 @@
                     id="q"
                     placeholder="Ask a question about this machine...">
 
-                <button onclick="ask()">
+                <button
+                    id="sendButton"
+                    onclick="ask()">
                     Send
                 </button>
 
@@ -663,6 +722,162 @@
         breaks:true
 
     });
+
+
+    const translations = {
+
+        en:{
+
+            pageTitle:"Internal Manual Assistant",
+
+            newChat:"New Chat",
+
+            logout:"Logout",
+
+            machine:"Machine",
+
+            documents:"Documents",
+
+            send:"Send",
+
+            login:"Login",
+
+            password:"Password",
+
+            askPlaceholder:
+                "Ask a question about this machine...",
+
+            thinking:"Thinking...",
+
+            wrongPassword:"Wrong password"
+
+        },
+
+        de:{
+
+            pageTitle:"Interner Handbuch-Assistent",
+
+            newChat:"Neuer Chat",
+
+            logout:"Abmelden",
+
+            machine:"Maschine",
+
+            documents:"Dokumente",
+
+            send:"Senden",
+
+            login:"Anmelden",
+
+            password:"Passwort",
+
+            askPlaceholder:
+                "Stellen Sie eine Frage zu dieser Maschine...",
+
+            thinking:"Denke...",
+
+            wrongPassword:"Falsches Passwort"
+
+        }
+
+    };
+
+
+    let currentLanguage =
+
+        localStorage.getItem("language")
+
+        || "en";
+
+
+    function setLanguage(lang){
+
+        currentLanguage = lang;
+
+        localStorage.setItem(
+            "language",
+            lang
+        );
+
+        const t =
+            translations[lang];
+
+        document.getElementById(
+            "pageTitle"
+        ).textContent =
+            t.pageTitle;
+
+        document.getElementById(
+            "newChatButton"
+        ).textContent =
+            t.newChat;
+
+        document.getElementById(
+            "logoutButton"
+        ).textContent =
+            t.logout;
+
+        document.getElementById(
+            "machineTitle"
+        ).textContent =
+            t.machine;
+
+        document.getElementById(
+            "documentsTitle"
+        ).textContent =
+            t.documents;
+
+        document.getElementById(
+            "sendButton"
+        ).textContent =
+            t.send;
+
+        document.getElementById(
+            "loginButton"
+        ).textContent =
+            t.login;
+
+        document.getElementById(
+            "password"
+        ).placeholder =
+            t.password;
+
+        document.getElementById(
+            "q"
+        ).placeholder =
+            t.askPlaceholder;
+
+        document.getElementById(
+            "langEN"
+        ).classList.toggle(
+            "active",
+            lang==="en"
+        );
+
+        document.getElementById(
+            "langDE"
+        ).classList.toggle(
+            "active",
+            lang==="de"
+        );
+
+    }
+
+    document.getElementById(
+        "langEN"
+    ).onclick = function(){
+
+        setLanguage("en");
+
+    };
+
+    document.getElementById(
+        "langDE"
+    ).onclick = function(){
+
+        setLanguage("de");
+
+    };
         // ----------------------------
         // SESSION ID
         // ----------------------------
@@ -1313,6 +1528,9 @@
         }
 
 
+        setLanguage(
+            currentLanguage
+        );
 
         checkLogin();
 </script>
