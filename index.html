@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>PDF Chatbot</title>
+    <title>Lehner Interner Handbuch-Assistent</title>
 
     
     <style>
@@ -565,15 +565,15 @@
 
     <div id="loginScreen" style="display:none;">
 
-        <h2>Internal Chatbot</h2>
+        <h2>Lehner Interner Handbuch-Assistent</h2>
 
         <input
             id="password"
             type="password"
-            placeholder="Password">
+            placeholder="Passwort">
 
         <button onclick="login()">
-            Login
+            Anmelden
         </button>
 
         <p id="loginError"></p>
@@ -584,16 +584,16 @@
 
     <header class="header">
 
-        <h1>Internal Manual Assistant</h1>
+        <h1>Lehner Interner Handbuch-Assistent</h1>
 
         <div class="header-buttons">
 
             <button onclick="clearChat()">
-                New Chat
+                Neuer Chat
             </button>
 
             <button onclick="logout()">
-                Logout
+                Abmelden
             </button>
 
         </div>
@@ -618,7 +618,7 @@
 
             <div class="card">
 
-                <h3>Machine</h3>
+                <h3>Produkt</h3>
 
                 <img id="machineImage">
 
@@ -627,7 +627,7 @@
 
             <div class="card">
 
-                <h3>Documents</h3>
+                <h3>Dokumente</h3>
 
                 <div id="documents"></div>
 
@@ -644,10 +644,10 @@
 
                 <input
                     id="q"
-                    placeholder="Ask a question about this machine...">
+                    placeholder="Frage zu diesem Produkt eingeben...">
 
                 <button onclick="ask()">
-                    Send
+                    Senden
                 </button>
 
             </div>
@@ -747,7 +747,7 @@
                 "bubble";
 
             botBubble.textContent =
-                "Thinking...";
+                "Antwort wird erstellt...";
 
             botMessage.appendChild(
                 botBubble
@@ -1200,7 +1200,7 @@
                 document.getElementById(
                     "loginError"
                 ).innerText =
-                    "Wrong password";
+                    "Falsches Passwort";
 
                 return;
 
