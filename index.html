@@ -29,6 +29,16 @@
 
     /* ---------------- HEADER ---------------- */
 
+    .language-bar{
+
+        display:flex;
+
+        justify-content:flex-end;
+
+        padding:16px 35px 0 35px;
+
+    }
+
     .header{
 
         height:72px;
@@ -318,7 +328,7 @@
 
         width:360px;
 
-        margin:120px auto;
+        margin:80px auto;
 
         background:white;
 
@@ -593,6 +603,32 @@
 
 <body>
 
+<body>
+
+    <div class="language-bar">
+
+        <div class="language-switch">
+
+            🌐
+
+            <span id="langEN">
+
+                EN
+
+            </span>
+
+            |
+
+            <span id="langDE">
+
+                DE
+
+            </span>
+
+        </div>
+
+    </div>
+
     <div id="loginScreen" style="display:none;">
 
         <h2>Internal Chatbot</h2>
@@ -616,22 +652,7 @@
 
     <header class="header">
 
-        <div
-            class="language-switch">
 
-            🌐
-
-            <span id="langEN">
-                EN
-            </span>
-
-            |
-
-            <span id="langDE">
-                DE
-            </span>
-
-        </div>
 
         <h1 id="pageTitle">
             Internal Manual Assistant
