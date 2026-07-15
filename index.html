@@ -90,6 +90,12 @@
         font-weight:600;
 
     }    
+
+    .language-switch span:hover{
+
+        color:#1f5aa6;
+
+    }    
     /* ---------------- APP ---------------- */
 
     #app{
@@ -962,7 +968,7 @@
                 "bubble";
 
             botBubble.textContent =
-                "Thinking...";
+                translations[currentLanguage].thinking;
 
             botMessage.appendChild(
                 botBubble
@@ -1415,7 +1421,7 @@
                 document.getElementById(
                     "loginError"
                 ).innerText =
-                    "Wrong password";
+                    translations[currentLanguage].wrongPassword;
 
                 return;
 
@@ -1426,6 +1432,10 @@
 
             authToken =
                 data.token;
+
+            document.getElementById(
+                "loginError"
+            ).innerText = "";
 
             sessionStorage.setItem(
                 "authToken",
