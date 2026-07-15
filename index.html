@@ -65,7 +65,25 @@
 
     }
 
+    .header-left{
 
+        display:flex;
+
+        align-items:center;
+
+        gap:16px;
+
+    }
+
+    .logo{
+
+        height:42px;
+
+        width:auto;
+
+        display:block;
+
+    }
     /* ---------------- APP ---------------- */
 
     #app{
@@ -580,11 +598,18 @@
 
     </div>
 
-    <div id="app" style="display:none;">
-
     <header class="header">
 
-        <h1>Lehner Interner Handbuch-Assistent</h1>
+        <div class="header-left">
+
+            <img
+                src="LEHNER_LOGO.svg"
+                alt="Company Logo"
+                class="logo">
+
+            <h1>Internal Manual Assistant</h1>
+
+        </div>
 
         <div class="header-buttons">
 
